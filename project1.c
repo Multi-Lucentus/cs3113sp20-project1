@@ -1,12 +1,101 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+#define BUF_SIZE 16
+
+typedef enum bool {false, true} bool;
+
+
+struct Process
+{
+	int pid;
+	int burst;
+	int priority;
+};
+typedef struct Process Process;
+
+
+// Prototype Functions
+int countContextSwitches(Process *process);
+double calcCPUUtilization(Process *process);
+double calcThroughput(Process *process);
+
 
 
 // Main Function
 // Start of Program Logic
 int main(int argc, char *argv[])
 {
+	// Variables
+	char *filename;
+	
+	int fd;
+	char *buffer;
+
+	int numProcesses;
+	int numThreads;
+	int numInstructions;
+
+	int numContextSwitches;
+	int numNonvolContextSwitches;
+	double cpuUtil;
+	double throughput;
+	double turnAroundTime;
+	double waitTime;
+	double responseTime;
+
+	Process *processes;
 
 
-	return 0;
+	// Check the command-line arguments
+	// argc = 1: use stdin
+	// argc = 2: use argv[1] for filename
+	if(argc == 1)
+	{
+		filename = "STDIN";
+	}
+	else if(argc == 2)
+	{
+		filename = argv[1];
+	}
+	else
+	{
+		// Print error to STDERR		
+	}
+
+	// Initialize the buffer
+	buffer = (char*)malloc(BUF_SIZE * sizeof(char));
+
+	// Open the file
+	// If we need to use STDIN, fd will just be 0
+	if(strcmp(filename, "STDIN") == 0)
+		fd = 0;
+	else
+		fd = open(filename, O_RDONLY, 0);
+
+	// Read through the file and add information to the Process array
+	char c;
+	while(read(fd, c, 1) > 0)
+	{
+		if(c != '\n')
+		{
+
+		}
+		else
+		{
+			
+		}
+	}
+	
+	free(buffer);
+
+	// Calculate information about the processes and output
+	
+
+	// Output
+	
+
+	exit(EXIT_SUCCESS);
 }
