@@ -7,7 +7,6 @@
 
 typedef enum bool {false, true} bool;
 
-
 struct Process
 {
 	int pid;
@@ -18,10 +17,13 @@ typedef struct Process Process;
 
 
 // Prototype Functions
+char* readline(int fd);
 int countContextSwitches(Process *process);
 double calcCPUUtilization(Process *process);
 double calcThroughput(Process *process);
-
+double calcTurnaroundTime(Process *process);
+double calcWaitTime(Process *process);
+double calcResponseTime(Process *process);
 
 
 // Main Function
@@ -65,7 +67,7 @@ int main(int argc, char *argv[])
 		// Print error to STDERR		
 	}
 
-	// Initialize the buffer
+	// Initialize the arrays
 	buffer = (char*)malloc(BUF_SIZE * sizeof(char));
 
 	// Open the file
@@ -75,21 +77,13 @@ int main(int argc, char *argv[])
 	else
 		fd = open(filename, O_RDONLY, 0);
 
-	// Read through the file and add information to the Process array
-	char c;
-	while(read(fd, c, 1) > 0)
-	{
-		if(c != '\n')
-		{
 
-		}
-		else
-		{
-			
-		}
-	}
+	// Read the first two lines to 
+
+	// Read through the file and add information to the Process array
+	processes = (Process*)malloc(numProcesses * sizeof(Process));
+
 	
-	free(buffer);
 
 	// Calculate information about the processes and output
 	
@@ -98,4 +92,34 @@ int main(int argc, char *argv[])
 	
 
 	exit(EXIT_SUCCESS);
+}
+
+
+// Function Declarations
+
+/**
+  * Reads a line from the file pointed to by the file descriptor
+  * Returns the string obtained from that file
+  */
+char* readline(int fd)
+{
+	char *buffer = malloc(BUF_SIZE * sizeof(char));
+	int bufCount = 0;
+
+	char c;
+	while(read(fd, &c, 1) > 0)
+	{
+		// Check if the character is newline
+		if(c != '\n')
+		{
+			buffer[bufCount] = c;
+			bufCount++;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	return buffer;
 }
