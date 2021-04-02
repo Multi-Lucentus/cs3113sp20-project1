@@ -22,13 +22,15 @@ typedef struct Process Process;
 
 // Prototype Functions
 char* readline(int fd);
+char** split(char* string, char splitChar);
 
-int countContextSwitches(Process *process);
-double calcCPUUtilization(Process *process);
-double calcThroughput(Process *process);
-double calcTurnaroundTime(Process *process);
-double calcWaitTime(Process *process);
-double calcResponseTime(Process *process);
+int countContextSwitches(Process *process, int count);
+int countNonvolContextSwitches(Process *process, int count);
+double calcCPUUtilization(Process *process, int count);
+double calcThroughput(Process *process, int count);
+double calcTurnaroundTime(Process *process, int count);
+double calcWaitTime(Process *process, int count);
+double calcResponseTime(Process *process, int count);
 
 
 // Main Function
@@ -60,16 +62,14 @@ int main(int argc, char *argv[])
 	// argc = 1: use stdin
 	// argc = 2: use argv[1] for filename
 	if(argc == 1)
-	{
 		filename = "STDIN";
-	}
 	else if(argc == 2)
-	{
 		filename = argv[1];
-	}
 	else
 	{
-		// Print error to STDERR		
+		// Print error to STDERR
+		dprintf(STDERR, "Illegal number of commmand-line arguments.\n");
+		exit(EXIT_FAILURE);
 	}
 
 	// Initialize the arrays
@@ -86,7 +86,6 @@ int main(int argc, char *argv[])
 	// Read the first two lines to get the initial data
 	char* firstLine;
 	char* secondLine;
-	char* data1, data2;
 
 	strcpy(firstLine, readline(fd));
 	strcpy(firstLine, readline(fd));
@@ -98,53 +97,42 @@ int main(int argc, char *argv[])
 	// Parse through the two lines to get the data
 	numProcesses = atoi(firstLine);
 	
-	// Separate the second line at the space to get the two numbers
-	bool isFirst = true;
-	for(int i = 0; i < BUF_SIZE; i++)
-	{
-		if(isFirst == true)
-		{
-			if(secondLine[i] == ' ')
-			{
-				isFirst = false;
-				
-			}
-		}
-		else
-		{
+	char** strArray = split(secondLine, ' ');
+	numThreads = atoi(strArray[0]);
+	numInstructions = atoi(strArray[1]);
 
-			if(secondLine[i] = '\0')
-				break;
-		}
-	}
 
 	// Read through the file and add information to the Process array
 	processes = (Process*)malloc(numInstructions * sizeof(Process));
 	
 	char* line;
+	char** data;
 	for(int i = 0; i < numInstructions; i++)
 	{
 		// Get the line
 		line = readline(fd);
 
 		// Parse the data
-		
+		data = split(line, ' ');
 
 		// Update the data inside the processes array
-		processes[i].pid;
-		processes[i].burst;
-		processes[i].priority;
+		processes[i].pid = atoi(data[0]);
+		processes[i].burst = atoi(data[1]);
+		processes[i].priority = atoi(data[2]);
 	}
 
+
 	// Calculate information about the processes and output
-	cpuUtil = calcCPUUtilization(processes);
-	throughput = calcThroughput(processes);
-	turnAroundTime = calcTurnaroundTime(processes);
-	waitTime = calcWaitTime(processes);
-	responseTime = calcResponseTime(processes);	
+	numContextSwitches = countContextSwitches(Process *process, numInstructions);
+	numNonvolContextSwitches = countNonvolContextSwitches(Process *process, numInstructions);
+	cpuUtil = calcCPUUtilization(processes, numInstructions);
+	throughput = calcThroughput(processes, numInstructions);
+	turnAroundTime = calcTurnaroundTime(processes, numInstructions);
+	waitTime = calcWaitTime(processes, numInstructions);
+	responseTime = calcResponseTime(processes, numInstructions);
+
 
 	// Output
-	
 	// Voluntary context switches
 	printf("%d\n", numContextSwitches);
 
@@ -165,6 +153,7 @@ int main(int argc, char *argv[])
 
 	// Average Response Time
 	printf("%.2f\n", responseTime);
+
 
 	exit(EXIT_SUCCESS);
 }
@@ -204,11 +193,62 @@ char* readline(int fd)
 /**
   *
   */
-double calcCPUUtilization(Process *process)
+char** split(char* string, char splitChar)
+{
+	char** stringArray;
+	int numSplits;
+
+	// First, iterate through the string and count the number of occurrences
+	// of the character to split on
+	for(int i = 0; i < strlen(string); i++)
+		if(string[i] == splitChar)
+			numSplits++;
+
+	stringArray = (char**)malloc(numSplits * sizeof(char*));
+	for(int i = 0; i < numSplits; i++)
+		stringArray[i] = (char*)malloc(BUF_SIZE * sizeof(char));
+
+	for(int i = 0; i < numSplits; i++)
+	{
+		// Get the string
+		for(int j = 0; j < strlen(string); j++)
+		{
+
+		}
+	}
+}
+
+
+/**
+  * Counts the number of Voluntary Context Switches
+  * 
+  */ 
+int countContextSwitches(Process *process, int count)
+{
+	int numSwitches;
+
+	for(int i = 0; i < count; i++)
+	{
+
+	}
+
+	return numSwitches;
+}
+
+/**
+  *
+  */ 
+int countNonvolContextSwitches(Process *process, int count)
+{
+
+}
+
+/**
+  *
+  */
+double calcCPUUtilization(Process *process, int count)
 {
 	double cpuUtil;
-
-
 
 	return cpuUtil;
 }
@@ -217,10 +257,11 @@ double calcCPUUtilization(Process *process)
 /**
   * 
   */
-double calcThroughput(Process *process)
+double calcThroughput(Process *process, int count)
 {
 	double throughput;
 
+	
 
 	return throughput;
 }
@@ -229,10 +270,9 @@ double calcThroughput(Process *process)
 /**
   *
   */
-double calcTurnaroundTime(Process *process)
+double calcTurnaroundTime(Process *process, int count)
 {
 	double turnaroundTime;
-
 
 	return turnaroundTime;
 }
@@ -241,7 +281,7 @@ double calcTurnaroundTime(Process *process)
 /**
   *
   */
-double calcWaitTime(Process *process)
+double calcWaitTime(Process *process, int count)
 {
 	double waitTime;
 
@@ -252,10 +292,9 @@ double calcWaitTime(Process *process)
 /**
   *
   */
-double calcResponseTime(Process *process)
+double calcResponseTime(Process *process, int count)
 {
 	double responseTime;
-
 
 	return responseTime;
 }
