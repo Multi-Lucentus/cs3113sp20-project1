@@ -9,7 +9,9 @@
 
 #define BUF_SIZE 16
 
+
 typedef enum bool {false, true} bool;
+
 
 struct Process
 {
@@ -23,14 +25,6 @@ typedef struct Process Process;
 // Prototype Functions
 char* readline(int fd);
 char** split(char* string, char splitChar);
-
-int countContextSwitches(Process *process, int count);
-int countNonvolContextSwitches(Process *process, int count);
-double calcCPUUtilization(Process *process, int count);
-double calcThroughput(Process *process, int count);
-double calcTurnaroundTime(Process *process, int count);
-double calcWaitTime(Process *process, int count);
-double calcResponseTime(Process *process, int count);
 
 
 // Main Function
@@ -84,8 +78,8 @@ int main(int argc, char *argv[])
 
 
 	// Read the first two lines to get the initial data
-	char* firstLine;
-	char* secondLine;
+	char* firstLine = (char*)malloc(BUF_SIZE * sizeof(char));
+	char* secondLine = (char*)malloc(BUF_SIZE * sizeof(char));
 
 	strcpy(firstLine, readline(fd));
 	strcpy(firstLine, readline(fd));
@@ -123,14 +117,7 @@ int main(int argc, char *argv[])
 
 
 	// Calculate information about the processes and output
-	numContextSwitches = countContextSwitches(Process *process, numInstructions);
-	numNonvolContextSwitches = countNonvolContextSwitches(Process *process, numInstructions);
-	cpuUtil = calcCPUUtilization(processes, numInstructions);
-	throughput = calcThroughput(processes, numInstructions);
-	turnAroundTime = calcTurnaroundTime(processes, numInstructions);
-	waitTime = calcWaitTime(processes, numInstructions);
-	responseTime = calcResponseTime(processes, numInstructions);
-
+	
 
 	// Output
 	// Voluntary context switches
@@ -168,7 +155,7 @@ int main(int argc, char *argv[])
   */
 char* readline(int fd)
 {
-	char *buffer = malloc(BUF_SIZE * sizeof(char));
+	char *buffer = (char*)malloc(BUF_SIZE * sizeof(char));
 	int bufCount = 0;
 
 	char c;
@@ -182,6 +169,7 @@ char* readline(int fd)
 		}
 		else
 		{
+			buffer[bufCount] = '\0';
 			break;
 		}
 	}
@@ -213,88 +201,7 @@ char** split(char* string, char splitChar)
 		// Get the string
 		for(int j = 0; j < strlen(string); j++)
 		{
-
 		}
 	}
-}
 
-
-/**
-  * Counts the number of Voluntary Context Switches
-  * 
-  */ 
-int countContextSwitches(Process *process, int count)
-{
-	int numSwitches;
-
-	for(int i = 0; i < count; i++)
-	{
-
-	}
-
-	return numSwitches;
-}
-
-/**
-  *
-  */ 
-int countNonvolContextSwitches(Process *process, int count)
-{
-
-}
-
-/**
-  *
-  */
-double calcCPUUtilization(Process *process, int count)
-{
-	double cpuUtil;
-
-	return cpuUtil;
-}
-
-
-/**
-  * 
-  */
-double calcThroughput(Process *process, int count)
-{
-	double throughput;
-
-	
-
-	return throughput;
-}
-
-
-/**
-  *
-  */
-double calcTurnaroundTime(Process *process, int count)
-{
-	double turnaroundTime;
-
-	return turnaroundTime;
-}
-
-
-/**
-  *
-  */
-double calcWaitTime(Process *process, int count)
-{
-	double waitTime;
-
-	return waitTime;
-}
-
-
-/**
-  *
-  */
-double calcResponseTime(Process *process, int count)
-{
-	double responseTime;
-
-	return responseTime;
-}
+}		
