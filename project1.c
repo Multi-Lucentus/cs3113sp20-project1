@@ -24,8 +24,7 @@ typedef struct Process Process;
 
 // Prototype Functions
 char* readline(int fd);
-char** split(char* string, char splitChar);
-
+char** split(char* string, char split);
 
 // Main Function
 // Start of Program Logic
@@ -179,29 +178,20 @@ char* readline(int fd)
 
 
 /**
-  *
+  * 
   */
-char** split(char* string, char splitChar)
+char** split(char* string, char split)
 {
 	char** stringArray;
-	int numSplits;
+	int arrayCount = 1;
 
-	// First, iterate through the string and count the number of occurrences
-	// of the character to split on
-	for(int i = 0; i < strlen(string); i++)
-		if(string[i] == splitChar)
-			numSplits++;
-
-	stringArray = (char**)malloc(numSplits * sizeof(char*));
-	for(int i = 0; i < numSplits; i++)
-		stringArray[i] = (char*)malloc(BUF_SIZE * sizeof(char));
-
-	for(int i = 0; i < numSplits; i++)
+	stringArray[0] = strtok(string, split);
+	
+	while(stringArray[arrayCount] != NULL)
 	{
-		// Get the string
-		for(int j = 0; j < strlen(string); j++)
-		{
-		}
+		stringArray[arrayCount] = strtok(NULL, split);
+		arrayCount++;
 	}
 
-}		
+	return stringArray;
+}
