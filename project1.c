@@ -29,6 +29,7 @@ char** split(char* string, char split);
 
 int countContextSwitches(Process* processes, int numInstructions);
 int countNonvolSwitches(Process* processes, int numInstructions);
+double calcCPUUtilization(Process* processes, int numInstructions);
 
 
 // Main Function
@@ -46,7 +47,7 @@ int main(int argc, char *argv[])
 	int numInstructions;
 
 	int numContextSwitches;
-	int numNonvolContextSwitches;
+	int numNonvolSwitches;
 	double cpuUtil;
 	double throughput;
 	double turnAroundTime;
@@ -130,8 +131,14 @@ int main(int argc, char *argv[])
 
 	// Calculate information about the processes and output
 	numContextSwitches = countContextSwitches(processes, numInstructions);
-	dprintf(STDOUT, "Context Switches: %d\n", numContextSwitches);
+	dprintf(STDOUT, "%d\n", numContextSwitches);
 	
+	numNonvolSwitches = countNonvolSwitches(processes, numInstructions);
+	dprintf(STDOUT, "%d\n", numNonvolSwitches);
+
+	cpuUtil = calcCPUUtilization(processes, numInstructions);
+	dprintf(STDOUT, "%.2f\n", cpuUtil);
+
 	exit(EXIT_SUCCESS);
 }
 
@@ -200,6 +207,7 @@ char** split(char* string, char split)
 /**
   * Counts the number of voluntary context switches in the processes list
   * A voluntary context switch is the completion of a process that never 
+  * TODO: Add check for if it is the last instruction - always completes
   */
 int countContextSwitches(Process* processes, int numInstructions)
 {
@@ -209,14 +217,20 @@ int countContextSwitches(Process* processes, int numInstructions)
 
 	for(int i = 0; i < numInstructions; i++)
 	{
-		testPID = processes[i].pid;
-
-		for(int j = i + 1; j < numInstructions; j++)
-			if(processes[j].pid == testPID)
-				isVoluntary = false;
-
-		if(isVoluntary == true)
+		// The last instruction will always be a voluntary context switch
+		if(i == numInstructions - 1)
 			count++;
+		else
+		{
+			testPID = processes[i].pid;
+
+			for(int j = i + 1; j < numInstructions; j++)
+				if(processes[j].pid == testPID)
+					isVoluntary = false;
+
+			if(isVoluntary == true)
+				count++;
+		}
 	}
 
 	return count;
@@ -234,7 +248,7 @@ int countNonvolSwitches(Process* processes, int numInstructions)
 
 	for(int i = 0; i < numInstructions; i++)
 	{
-		testPID = proesses[i].pid;
+		testPID = processes[i].pid;
 
 		for(int j = j + 2; j < numInstructions; j++)
 			if(processes[j].pid == testPID)
@@ -245,4 +259,15 @@ int countNonvolSwitches(Process* processes, int numInstructions)
 	}
 
 	return count;
+}
+
+/**
+  * Calculates the CPU Utilization Percentage
+  * CPU Utilization
+  */
+double calcCPUUtilization(Process* processes, int numInstructions)
+{
+	double cpuUtil;
+
+	return cpuUtil;
 }
