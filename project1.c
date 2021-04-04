@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -81,7 +82,7 @@ int main(int argc, char *argv[])
 	char* secondLine = (char*)malloc(BUF_SIZE * sizeof(char));
 
 	strcpy(firstLine, readline(fd));
-	strcpy(firstLine, readline(fd));
+	strcpy(secondLine, readline(fd));
 
 	// TEST OUTPUT
 	dprintf(STDERR, "First Line: %s\n", firstLine);
@@ -89,10 +90,15 @@ int main(int argc, char *argv[])
 
 	// Parse through the two lines to get the data
 	numProcesses = atoi(firstLine);
+	dprintf(STDERR, "Num Processes: %d\n", numProcesses);
 	
 	char** strArray = split(secondLine, ' ');
+
 	numThreads = atoi(strArray[0]);
+	dprintf(STDERR, "Num Threads: %d\n", numThreads);
+
 	numInstructions = atoi(strArray[1]);
+	dprintf(STDERR, "Num Instructions: %d\n", numInstructions);
 
 
 	// Read through the file and add information to the Process array
@@ -112,34 +118,14 @@ int main(int argc, char *argv[])
 		processes[i].pid = atoi(data[0]);
 		processes[i].burst = atoi(data[1]);
 		processes[i].priority = atoi(data[2]);
+
+		// TEST OUTPUT
+		dprintf(STDERR, "PID: %d Burst: %d Prio: %d\n", processes[i].pid, processes[i].burst, processes[i].priority);
 	}
 
 
 	// Calculate information about the processes and output
 	
-
-	// Output
-	// Voluntary context switches
-	printf("%d\n", numContextSwitches);
-
-	// Non-voluntary context switches
-	printf("%d\n", numNonvolContextSwitches);
-
-	// CPU Utilization
-	printf("%.2f\n", cpuUtil);
-
-	// Average Throughput
-	printf("%.2f\n", throughput);
-
-	// Average Turnaround Time
-	printf("%.2f\n", turnAroundTime);
-
-	// Average Wait Time
-	printf("%.2f\n", waitTime);
-
-	// Average Response Time
-	printf("%.2f\n", responseTime);
-
 
 	exit(EXIT_SUCCESS);
 }
@@ -150,7 +136,6 @@ int main(int argc, char *argv[])
 /**
   * Reads a line from the file pointed to by the file descriptor
   * Returns the string obtained from that file
-  * TODO: May have to add a line number parameter
   */
 char* readline(int fd)
 {
@@ -178,18 +163,28 @@ char* readline(int fd)
 
 
 /**
-  * 
+  * Splits a string according to the split parameter
+  * Returns an array of strings
   */
 char** split(char* string, char split)
 {
-	char** stringArray;
+	// Count number of occurrences of the split character
+	int splitCount = 0;
+	for(int i = 0; i < strlen(string); i++)
+		if(string[i] == split)
+			splitCount++;
+
+	char** stringArray = (char**)malloc((splitCount + 1) * sizeof(char*));
+	for(int i = 0; i < (splitCount + 1); i++)
+		stringArray[i] = (char*)malloc(BUF_SIZE * sizeof(char));
+
 	int arrayCount = 1;
 
-	stringArray[0] = strtok(string, split);
+	stringArray[0] = strtok(string, &split);
 	
 	while(stringArray[arrayCount] != NULL)
 	{
-		stringArray[arrayCount] = strtok(NULL, split);
+		stringArray[arrayCount] = strtok(NULL, &split);
 		arrayCount++;
 	}
 
