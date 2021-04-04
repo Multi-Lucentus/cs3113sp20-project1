@@ -27,6 +27,10 @@ typedef struct Process Process;
 char* readline(int fd);
 char** split(char* string, char split);
 
+int countContextSwitches(Process* processes, int numInstructions);
+int countNonvolSwitches(Process* processes, int numInstructions);
+
+
 // Main Function
 // Start of Program Logic
 int main(int argc, char *argv[])
@@ -125,8 +129,9 @@ int main(int argc, char *argv[])
 
 
 	// Calculate information about the processes and output
+	numContextSwitches = countContextSwitches(processes, numInstructions);
+	dprintf(STDOUT, "Context Switches: %d\n", numContextSwitches);
 	
-
 	exit(EXIT_SUCCESS);
 }
 
@@ -189,4 +194,30 @@ char** split(char* string, char split)
 	}
 
 	return stringArray;
+}
+
+
+/**
+  * Counts the number of voluntary context switches in the processes list
+  * A voluntary context switch is the completion of a process that never 
+  */
+int countContextSwitches(Process* processes, int numInstructions)
+{
+	int count = 0;
+	int testPID;
+	bool isVoluntary = true;
+
+	for(int i = 0; i < numInstructions; i++)
+	{
+		testPID = processes[i].pid;
+
+		for(int j = i + 1; j < numInstructions; j++)
+			if(processes[j].pid == testPID)
+				isVoluntary = false;
+
+		if(isVoluntary == true)
+			count++;
+	}
+
+	return count;
 }
