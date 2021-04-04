@@ -221,3 +221,28 @@ int countContextSwitches(Process* processes, int numInstructions)
 
 	return count;
 }
+
+/**
+  * Counts the number of nonvoluntary context switches in the processes list
+  * A nonvoluntary context switch
+  */
+int countNonvolSwitches(Process* processes, int numInstructions)
+{
+	int count = 0;
+	int testPID;
+	bool isNonVoluntary = false;
+
+	for(int i = 0; i < numInstructions; i++)
+	{
+		testPID = proesses[i].pid;
+
+		for(int j = j + 2; j < numInstructions; j++)
+			if(processes[j].pid == testPID)
+				isNonVoluntary = true;
+		
+		if(isNonVoluntary == true)
+			count++;
+	}
+
+	return count;
+}
