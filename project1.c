@@ -31,6 +31,9 @@ int countContextSwitches(Process* processes, int numInstructions);
 int countNonvolSwitches(Process* processes, int numInstructions);
 double calcCPUUtilization(Process* processes, int numInstructions);
 double calcThroughput(Process* processes, int numThreads, int numInstructions);
+double calcTurnaroundTime(Process* processes, int numThreads, int numInstructions);
+double calcWaitTime(Process* processes, int numInstructions);
+double calcResponseTime(Process* processes, int numInstructions);
 
 
 // Main Function
@@ -142,6 +145,9 @@ int main(int argc, char *argv[])
 
 	throughput = calcThroughput(processes, numThreads, numInstructions);
 	dprintf(STDOUT, "%.2f\n", throughput);
+
+	turnAroundTime = calcTurnaroundTime(processes, numThreads, numInstructions);
+	dprintf(STDOUT, "%.2f\n", turnAroundTime);
 
 	exit(EXIT_SUCCESS);
 }
@@ -298,4 +304,78 @@ double calcThroughput(Process* processes, int numThreads, int numInstructions)
 	throughput = (numThreads / totalTime);
 
 	return throughput;
+}
+
+/**
+  * Calculates the average turnaround time for the process
+  * Turnaround time is the time from submission of a process until completion
+  */
+double calcTurnaroundTime(Process* processes, int numThreads, int numInstructions)
+{
+	double turnaroundTime;
+	int numCompletedTasks = 0;
+	int testPID;
+	double totalTime = 0;
+	
+	int* pidList = (int*)malloc(numThreads * sizeof(int));
+	int listCount = 0;
+	bool isPIDfound = false;
+	int numOccurrences = 1;
+
+	for(int i = 0; i < numInstructions; i++)
+	{
+		testPID = processes[i].pid;
+		
+		// Check to see if we have already summed the number for this PID
+		// Do not want to sum it more than once
+		for(int j = 0; j < listCount; j++)
+			if(pidList[j] == testPID)
+				isPIDfound = true;
+		
+		if(isPIDfound == false)
+		{
+			pidList[listCount] = testPID;
+			listCount++;
+
+			// Count the number of times this PID occurs
+			for(int j = i + 1; j < numInstructions; j++)
+				if(processes[j].pid == testPID)
+					numOccurrences++;
+
+			// Count the total burst time until the process completes
+			for(int j = 0; j < numInstructions; j++)
+			{
+				if(numOccurrences > 0)
+				{
+					totalTime += processes[j].burst;
+					
+					if(processes[j].pid == testPID)
+						numOccurrences--;
+				}
+			}
+		}
+
+		isPIDfound = false;
+		numOccurrences = 1;
+	}
+
+	turnaroundTime = totalTime / numThreads;
+
+	return turnaroundTime;
+}
+
+/**
+  *
+  */
+double calcWaitingTime(Process* processes, int numThreads, int numInstructions)
+{
+	double waitTime;
+	double totalTime;
+
+	for(int i = 0; i < numInstructions; i++)
+	{
+
+	}
+
+	return waitTime;
 }
