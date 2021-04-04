@@ -8,4 +8,7 @@ From there, the user can just type "./project1 [filename]" to run the program. [
 
 <b><u>Functions</b></u></br>
 <i>char* readline(int fd)</i></br>
-This function takes in a file descriptor, and then uses that file descriptor to read the file. The function reads the file until a newline character appears, and once it does, it returns the string before the newline character.
+This function takes in a file descriptor, and then uses that file descriptor to read the file. The function reads the file until a newline character appears, and once it does, it returns the string before the newline character.</br></br>
+
+<i>char** split(char* string, char split)</i></br>
+This function takes in a string as the "char* string" parameter splits the string into an array of strings according to the "char split" parameter. The function then returns the array of strings.</br></br>
