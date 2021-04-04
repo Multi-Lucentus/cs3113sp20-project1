@@ -30,6 +30,7 @@ char** split(char* string, char split);
 int countContextSwitches(Process* processes, int numInstructions);
 int countNonvolSwitches(Process* processes, int numInstructions);
 double calcCPUUtilization(Process* processes, int numInstructions);
+double calcThroughput(Process* processes, int numThreads, int numInstructions);
 
 
 // Main Function
@@ -139,6 +140,9 @@ int main(int argc, char *argv[])
 	cpuUtil = calcCPUUtilization(processes, numInstructions);
 	dprintf(STDOUT, "%.2f\n", cpuUtil);
 
+	throughput = calcThroughput(processes, numThreads, numInstructions);
+	dprintf(STDOUT, "%.2f\n", throughput);
+
 	exit(EXIT_SUCCESS);
 }
 
@@ -206,8 +210,7 @@ char** split(char* string, char split)
 
 /**
   * Counts the number of voluntary context switches in the processes list
-  * A voluntary context switch is the completion of a process that never 
-  * TODO: Add check for if it is the last instruction - always completes
+  * A voluntary context switch is the completion of a process
   */
 int countContextSwitches(Process* processes, int numInstructions)
 {
@@ -238,7 +241,7 @@ int countContextSwitches(Process* processes, int numInstructions)
 
 /**
   * Counts the number of nonvoluntary context switches in the processes list
-  * A nonvoluntary context switch
+  * A nonvoluntary context switch is a context switch if the process has not fully completed and completes later
   */
 int countNonvolSwitches(Process* processes, int numInstructions)
 {
@@ -263,7 +266,7 @@ int countNonvolSwitches(Process* processes, int numInstructions)
 
 /**
   * Calculates the CPU Utilization Percentage
-  * CPU Utilization
+  * CPU Utilization is the percentage of time that the processor has been used
   */
 double calcCPUUtilization(Process* processes, int numInstructions)
 {
@@ -277,4 +280,22 @@ double calcCPUUtilization(Process* processes, int numInstructions)
 	totalTime = processTime;
 
 	return (processTime / totalTime) * 100;
+}
+
+/**
+  * Calculats the average throughput
+  * Throughput is the average number of executions completed per time unit (none specified for this project)
+  */
+double calcThroughput(Process* processes, int numThreads, int numInstructions)
+{
+	double throughput;
+	int numCompletedProcesses;
+	double totalTime = 0;
+
+	for(int i = 0; i < numInstructions; i++)
+		totalTime += processes[i].burst;
+
+	throughput = (numThreads / totalTime);
+
+	return throughput;
 }
