@@ -267,7 +267,14 @@ int countNonvolSwitches(Process* processes, int numInstructions)
   */
 double calcCPUUtilization(Process* processes, int numInstructions)
 {
-	double cpuUtil;
+	int totalTime;
+	int processTime = 0;
 
-	return cpuUtil;
+	for(int i = 0; i < numInstructions; i++)
+		processTime += processes[i].burst;
+
+	// In this case, the process time is the total time of the system
+	totalTime = processTime;
+
+	return (processTime / totalTime) * 100;
 }
