@@ -219,7 +219,6 @@ char** split(char* string, char split)
 	return stringArray;
 }
 
-
 /**
   * Counts the number of voluntary context switches in the processes list
   * A voluntary context switch is the completion of a process
@@ -246,6 +245,8 @@ int countContextSwitches(Process* processes, int numInstructions)
 			if(isVoluntary == true)
 				count++;
 		}
+
+		isVoluntary = true;
 	}
 
 	return count;
