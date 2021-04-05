@@ -393,15 +393,14 @@ double calcWaitTime(Process* processes, int numThreads, int numInstructions)
 	{
 		testPID = processes[i].pid;
 
-		// If the process before this one has the same PID and will have the same waiting time
-		if(processes[i - 1].pid != testPID)
-			for(int j = 0; j < i; j++)
-				waitTime += processes[j].burst;
+		// Sum all the burst times before this process to get the wait time
+		for(int j = 0; j < i; j++)
+			waitTime += processes[j].burst;
 	}
 
 	free(pidList);
 
-	return waitTime / numThreads;
+	return waitTime / numInstructions;
 }
 
 /**
