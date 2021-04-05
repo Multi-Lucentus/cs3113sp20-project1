@@ -32,8 +32,8 @@ int countNonvolSwitches(Process* processes, int numInstructions);
 double calcCPUUtilization(Process* processes, int numInstructions);
 double calcThroughput(Process* processes, int numThreads, int numInstructions);
 double calcTurnaroundTime(Process* processes, int numThreads, int numInstructions);
-double calcWaitTime(Process* processes, int numInstructions);
-double calcResponseTime(Process* processes, int numInstructions);
+double calcWaitTime(Process* processes, int numThreads, int numInstructions);
+double calcResponseTime(Process* processes, int numThreads, int numInstructions);
 
 
 // Main Function
@@ -148,6 +148,12 @@ int main(int argc, char *argv[])
 
 	turnAroundTime = calcTurnaroundTime(processes, numThreads, numInstructions);
 	dprintf(STDOUT, "%.2f\n", turnAroundTime);
+
+	waitTime = calcWaitTime(processes, numThreads, numInstructions);
+	dprintf(STDOUT, "%.2f\n", waitTime);
+
+	responseTime = calcResponseTime(processes, numThreads, numInstructions);
+	dprintf(STDOUT, "%.2f\n", responseTime);
 
 	exit(EXIT_SUCCESS);
 }
@@ -361,21 +367,60 @@ double calcTurnaroundTime(Process* processes, int numThreads, int numInstruction
 
 	turnaroundTime = totalTime / numThreads;
 
+	free(pidList);
+
 	return turnaroundTime;
 }
 
 /**
-  *
+  * Calculates the average waiting time for all processes provided in the first parameter
   */
-double calcWaitingTime(Process* processes, int numThreads, int numInstructions)
+double calcWaitTime(Process* processes, int numThreads, int numInstructions)
 {
-	double waitTime;
+	double waitTime = 0;
 	double totalTime;
+
+	int* pidList = (int*)malloc(numThreads * sizeof(int));
+	int testPID;
+	int listCount = 0;
+	bool isPIDFound = false;
+	int numOccurrences = 1;
+
+	for(int i = 1; i < numInstructions; i++)
+	{
+		testPID = processes[i].pid;
+
+		// Check if the process has already been checked for waiting
+		// Once a process starts executing, it cannot be in waiting
+		for(int j = 0; j < listCount; j++)
+			if(pidList[j] == testPID)
+				isPIDFound = true;
+
+		if(isPIDFound == false)
+		{
+			pidList[listCount] = testPID;
+			listCount++;
+
+			for(int j = 0; j < i; j++)
+				waitTime += processes[j].burst;
+		}
+	}
+
+	return waitTime / numThreads;
+}
+
+/**
+  * Calculates the average response time for all processes
+  * Response time is the time between submission and initial execution
+  */
+double calcResponseTime(Process* processes, int numThreads, int numInstructions)
+{
+	double responseTime;
 
 	for(int i = 0; i < numInstructions; i++)
 	{
 
 	}
 
-	return waitTime;
+	return responseTime;
 }
