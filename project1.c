@@ -266,12 +266,14 @@ int countNonvolSwitches(Process* processes, int numInstructions)
 	{
 		testPID = processes[i].pid;
 
-		for(int j = j + 2; j < numInstructions; j++)
+		for(int j = i + 2; j < numInstructions; j++)
 			if(processes[j].pid == testPID)
 				isNonVoluntary = true;
 		
 		if(isNonVoluntary == true)
 			count++;
+		
+		isNonVoluntary = false;
 	}
 
 	return count;
