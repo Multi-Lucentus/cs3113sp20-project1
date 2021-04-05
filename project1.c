@@ -94,20 +94,20 @@ int main(int argc, char *argv[])
 	strcpy(secondLine, readline(fd));
 
 	// TEST OUTPUT
-	dprintf(STDERR, "First Line: %s\n", firstLine);
-	dprintf(STDERR, "Second Line: %s\n", secondLine);
+	// dprintf(STDERR, "First Line: %s\n", firstLine);
+	// dprintf(STDERR, "Second Line: %s\n", secondLine);
 
 	// Parse through the two lines to get the data
 	numProcesses = atoi(firstLine);
-	dprintf(STDERR, "Num Processes: %d\n", numProcesses);
+	// dprintf(STDERR, "Num Processes: %d\n", numProcesses);
 	
 	char** strArray = split(secondLine, ' ');
 
 	numThreads = atoi(strArray[0]);
-	dprintf(STDERR, "Num Threads: %d\n", numThreads);
+	// dprintf(STDERR, "Num Threads: %d\n", numThreads);
 
 	numInstructions = atoi(strArray[1]);
-	dprintf(STDERR, "Num Instructions: %d\n", numInstructions);
+	// dprintf(STDERR, "Num Instructions: %d\n", numInstructions);
 
 
 	// Read through the file and add information to the Process array
@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
 		processes[i].priority = atoi(data[2]);
 
 		// TEST OUTPUT
-		dprintf(STDERR, "PID: %d Burst: %d Prio: %d\n", processes[i].pid, processes[i].burst, processes[i].priority);
+		// dprintf(STDERR, "PID: %d Burst: %d Prio: %d\n", processes[i].pid, processes[i].burst, processes[i].priority);
 	}
 
 
@@ -374,6 +374,7 @@ double calcTurnaroundTime(Process* processes, int numThreads, int numInstruction
 
 /**
   * Calculates the average waiting time for all processes provided in the first parameter
+  * Potential issue: if first process shows up again later
   */
 double calcWaitTime(Process* processes, int numThreads, int numInstructions)
 {
@@ -384,8 +385,7 @@ double calcWaitTime(Process* processes, int numThreads, int numInstructions)
 	int testPID;
 	int listCount = 0;
 	bool isPIDFound = false;
-	int numOccurrences = 1;
-
+	
 	for(int i = 1; i < numInstructions; i++)
 	{
 		testPID = processes[i].pid;
@@ -404,7 +404,11 @@ double calcWaitTime(Process* processes, int numThreads, int numInstructions)
 			for(int j = 0; j < i; j++)
 				waitTime += processes[j].burst;
 		}
+
+		isPIDFound = false;
 	}
+
+	free(pidList);
 
 	return waitTime / numThreads;
 }
@@ -415,12 +419,35 @@ double calcWaitTime(Process* processes, int numThreads, int numInstructions)
   */
 double calcResponseTime(Process* processes, int numThreads, int numInstructions)
 {
-	double responseTime;
+	double responseTime = 0;
+	int testPID;
+	int* pidList = (int*)malloc(numThreads * sizeof(int));
+	int listCount = 0;
+	bool isPIDFound = false;
 
-	for(int i = 0; i < numInstructions; i++)
+	// Calculate the response time for each process
+	// Start at one since in this instance the first process will have 0 response time since it starts immediately
+	for(int i = 1; i < numInstructions; i++)
 	{
+		testPID = processes[i].pid;
 
+		for(int j = 0; j < listCount; j++)
+			if(pidList[j] == testPID)
+				isPIDFound = true;
+
+		if(isPIDFound == false)
+		{
+			pidList[listCount] = testPID;
+			listCount++;
+
+			for(int j = 0; j < i; j++)
+				responseTime += processes[j].burst;
+		}
+
+		isPIDFound = false;
 	}
 
-	return responseTime;
+	free(pidList);
+
+	return responseTime / numThreads;
 }
