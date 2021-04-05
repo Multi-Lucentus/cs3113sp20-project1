@@ -32,3 +32,7 @@ This function calculates the average throughput of all of the processes given in
 Calculates the average turnaround time of all of the processes in the processes list. Turnaround time is the time from submission until completion, so in this assignment the average turnaround time will be the time for each process to complete divided by the number of threads.</br>
 
 <i>double calcWaitingTime(Process* processes, int numThreads, int numInstructions)</i></br>
+This function calculates the average waiting time for each process in "Process* processes" list. The waiting time is the number of time units from submission until the process begins executing.</br>
+
+<i>double calcResponseTime(Process* processes, int numThreads, int numInstructions)</i></br>
+This function calculates the average response time for each process in the processes list. The response time is similar to the wait time, but does not include when the process executes again later.
