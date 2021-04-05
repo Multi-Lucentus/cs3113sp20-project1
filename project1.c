@@ -393,22 +393,10 @@ double calcWaitTime(Process* processes, int numThreads, int numInstructions)
 	{
 		testPID = processes[i].pid;
 
-		// Check if the process has already been checked for waiting
-		// Once a process starts executing, it cannot be in waiting
-		for(int j = 0; j < listCount; j++)
-			if(pidList[j] == testPID)
-				isPIDFound = true;
-
-		if(isPIDFound == false)
-		{
-			pidList[listCount] = testPID;
-			listCount++;
-
+		// If the process before this one has the same PID and will have the same waiting time
+		if(processes[i - 1].pid != testPID)
 			for(int j = 0; j < i; j++)
 				waitTime += processes[j].burst;
-		}
-
-		isPIDFound = false;
 	}
 
 	free(pidList);
