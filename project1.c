@@ -244,7 +244,7 @@ int countContextSwitches(Process* processes, int numInstructions)
 
 			if(isVoluntary == true)
 			{
-				dprintf(STDERR, "Voluntary Switch at i = %d\n", i);
+				// dprintf(STDERR, "Voluntary Switch at i = %d\n", i);
 				count++;
 			}
 		}
@@ -282,7 +282,7 @@ int countNonvolSwitches(Process* processes, int numInstructions)
 
 		if(isNonVoluntary == true)
 		{
-			dprintf(STDERR, "Nonvoluntary Switch at i = %d\n", i);
+			// dprintf(STDERR, "Nonvoluntary Switch at i = %d\n", i);
 			count++;
 		}
 		
@@ -456,8 +456,11 @@ double calcResponseTime(Process* processes, int numThreads, int numInstructions)
 	double responseTime = 0;
 	int testPID;
 	int* pidList = (int*)malloc(numThreads * sizeof(int));
-	int listCount = 0;
+	int listCount = 1;
 	bool isPIDFound = false;
+
+	// Put in the first value into pidList manually since the for loop starts at 1
+	pidList[0] = processes[0].pid;
 
 	// Calculate the response time for each process
 	// Start at one since in this instance the first process will have 0 response time since it starts immediately
