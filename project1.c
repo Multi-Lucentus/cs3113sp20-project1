@@ -8,7 +8,7 @@
 #define STDOUT 1
 #define STDERR 2
 
-#define BUF_SIZE 16
+#define BUF_SIZE 64
 
 
 typedef enum bool {false, true} bool;
@@ -262,7 +262,9 @@ int countNonvolSwitches(Process* processes, int numInstructions)
 	int testPID;
 	bool isNonVoluntary = false;
 
-	for(int i = 0; i < numInstructions; i++)
+	// Loop through the list and count
+	// Go from 0 to the second to last element becuase the last element will always be voluntary
+	for(int i = 0; i < (numInstructions - 1); i++)
 	{
 		testPID = processes[i].pid;
 
@@ -381,26 +383,58 @@ double calcTurnaroundTime(Process* processes, int numThreads, int numInstruction
   */
 double calcWaitTime(Process* processes, int numThreads, int numInstructions)
 {
-	double waitTime = 0;
-	double totalTime;
+	double waitTime;
+	double totalTime = 0;
 
 	int* pidList = (int*)malloc(numThreads * sizeof(int));
+	int listCount = 1;
+	bool doesPidExist = false;
+	int index;
+
+	// Manually put in the first element of the pidList since the for loop starts at 1
+	pidList[0] = processes[0].pid;
+
 	int testPID;
-	int listCount = 0;
-	bool isPIDFound = false;
-	
 	for(int i = 1; i < numInstructions; i++)
 	{
 		testPID = processes[i].pid;
 
-		// Sum all the burst times before this process to get the wait time
-		for(int j = 0; j < i; j++)
-			waitTime += processes[j].burst;
+		// Do not need to add to the wait time if process right before this one has same PID
+		if(processes[i-1].pid != testPID)
+		{
+			// Check if the pid has already been summed
+			for(int j = 0; j < listCount; j++)
+				if(pidList[j] == testPID)
+					doesPidExist = true;
+
+			// If it does exist, need to find the last index and sum from after
+			if(doesPidExist == true)
+			{
+				for(int j = 0; j < i; j++)
+					if(processes[j].pid == testPID)
+						index = j;
+
+				// Start from the last index found of the same PID and sum from there
+				for(int k = index + 1; k < i; k++)
+					totalTime += processes[k].burst;
+			}
+			else
+			{
+				// Can just sum from the beginning
+				for(int j = 0; j < i; j++)
+					totalTime += processes[j].burst;
+				
+				pidList[listCount] = testPID;
+				listCount++;
+			}
+		}
+
+		doesPidExist = false;
 	}
 
-	free(pidList);
+	waitTime = totalTime / numThreads;
 
-	return waitTime / numInstructions;
+	return waitTime;
 }
 
 /**
