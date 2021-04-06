@@ -35,4 +35,7 @@ Calculates the average turnaround time of all of the processes in the processes 
 This function calculates the average waiting time for each process in "Process* processes" list. The waiting time is the number of time units from submission until the process begins executing.</br>
 
 <i>double calcResponseTime(Process* processes, int numThreads, int numInstructions)</i></br>
-This function calculates the average response time for each process in the processes list. The response time is similar to the wait time, but does not include when the process executes again later.
+This function calculates the average response time for each process in the processes list. The response time is similar to the wait time, but does not include when the process executes again later.</br></br>
+
+<b><u>Assumptions</b></u></br>
+The main assumption I made is that the number of characters on each line would not exceed 64 characters as I made that the buffer size in my program.
