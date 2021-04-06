@@ -243,7 +243,10 @@ int countContextSwitches(Process* processes, int numInstructions)
 					isVoluntary = false;
 
 			if(isVoluntary == true)
+			{
+				dprintf(STDERR, "Voluntary Switch at i = %d\n", i);
 				count++;
+			}
 		}
 
 		isVoluntary = true;
@@ -268,12 +271,20 @@ int countNonvolSwitches(Process* processes, int numInstructions)
 	{
 		testPID = processes[i].pid;
 
+		// Loop through the rest of the array to find if there is a match
 		for(int j = i + 2; j < numInstructions; j++)
 			if(processes[j].pid == testPID)
 				isNonVoluntary = true;
 		
+		// If the process right after has the same PID, there is no context switch
+		if(processes[i + 1].pid == testPID)
+			isNonVoluntary = false;
+
 		if(isNonVoluntary == true)
+		{
+			dprintf(STDERR, "Nonvoluntary Switch at i = %d\n", i);
 			count++;
+		}
 		
 		isNonVoluntary = false;
 	}
@@ -379,7 +390,6 @@ double calcTurnaroundTime(Process* processes, int numThreads, int numInstruction
 
 /**
   * Calculates the average waiting time for all processes provided in the first parameter
-  * Potential issue: if first process shows up again later
   */
 double calcWaitTime(Process* processes, int numThreads, int numInstructions)
 {
